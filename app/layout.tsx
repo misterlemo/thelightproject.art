@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   keywords: ["contemporary Greek artist", "original handmade paintings", "acrylic paintings on canvas", "light and shadow art", "contemporary art from Greece", "fine art paintings for sale", "modern Mediterranean art"],
   authors: [{ name: "Maria-Efimia Dimoka" }],
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.svg",
   },
   openGraph: {
     title: "The Light Project | Contemporary Greek Art by Maria-Efimia Dimoka",
