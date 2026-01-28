@@ -8,40 +8,17 @@ export default function Contact() {
     email: "",
     message: "",
   });
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("submitting");
-
-    try {
-      // Send email using Formspree
-      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _replyto: formData.email,
-          _subject: `New inquiry from ${formData.name} - The Light Project`,
-        }),
-      });
-
-      if (response.ok) {
-        setStatus("success");
-        setFormData({ name: "", email: "", message: "" });
-        setTimeout(() => setStatus("idle"), 5000);
-      } else {
-        setStatus("error");
-        setTimeout(() => setStatus("idle"), 5000);
-      }
-    } catch (error) {
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 5000);
-    }
+    
+    // Open email client with pre-filled message
+    const subject = encodeURIComponent(`Inquiry from ${formData.name} - The Light Project`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    
+    window.location.href = `mailto:thelightproject.art@gmail.com?subject=${subject}&body=${body}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -120,23 +97,10 @@ export default function Contact() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={status === "submitting"}
-            className="w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg tracking-wide"
+            className="w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide"
           >
-            {status === "submitting" ? "Sending..." : "Send Message"}
+            Send Message
           </button>
-
-          {/* Status Messages */}
-          {status === "success" && (
-            <div className="p-4 bg-green-50 border border-green-200 text-green-800 text-center">
-              Thank you! Your message has been sent successfully.
-            </div>
-          )}
-          {status === "error" && (
-            <div className="p-4 bg-red-50 border border-red-200 text-red-800 text-center">
-              Something went wrong. Please try again.
-            </div>
-          )}
         </form>
 
         {/* Instagram Link */}
