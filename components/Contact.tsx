@@ -10,31 +10,33 @@ export default function Contact() {
     setShowSuccess(true);
     // Scroll to home anchor
     window.scrollTo({ top: 0, behavior: "smooth" });
-    // Submit the form
-    e.currentTarget.submit();
-    // Hide success message after 10 seconds
-    setTimeout(() => setShowSuccess(false), 10000);
+    // Submit the form after a delay so user sees the success message
+    setTimeout(() => {
+      e.currentTarget.submit();
+    }, 500);
   };
 
   return (
-    <section
-      id="contact"
-      className="py-24 md:py-32 bg-white"
-      aria-labelledby="contact-heading"
-    >
-      <div className="max-w-2xl mx-auto px-6">
-        <h2 id="contact-heading" className="text-4xl md:text-5xl font-serif text-center mb-6">
-          Contact
-        </h2>
-        <p className="text-center text-lg text-secondary mb-12">
-          Interested in acquiring an original work, commissioning a custom painting, or exploring collaboration opportunities? All paintings are available for purchase and can be shipped internationally.
-        </p>
+    <>
+      {/* Fixed success message overlay */}
+      {showSuccess && (
+        <div className="fixed top-0 left-0 right-0 z-50 p-4 bg-green-50 border-b border-green-200 text-green-800 text-center">
+          ✓ Thank you! Your message has been sent successfully. We'll get back to you soon.
+        </div>
+      )}
 
-        {showSuccess && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 text-center rounded-lg">
-            ✓ Thank you! Your message has been sent successfully. We'll get back to you soon.
-          </div>
-        )}
+      <section
+        id="contact"
+        className="py-24 md:py-32 bg-white"
+        aria-labelledby="contact-heading"
+      >
+        <div className="max-w-2xl mx-auto px-6">
+          <h2 id="contact-heading" className="text-4xl md:text-5xl font-serif text-center mb-6">
+            Contact
+          </h2>
+          <p className="text-center text-lg text-secondary mb-12">
+            Interested in acquiring an original work, commissioning a custom painting, or exploring collaboration opportunities? All paintings are available for purchase and can be shipped internationally.
+          </p>
 
         <form action="https://formsubmit.co/thelightproject.art@gmail.com" method="POST" onSubmit={handleSubmit} className="space-y-6">
           <input type="hidden" name="_subject" value="New Inquiry - The Light Project" />
@@ -113,5 +115,6 @@ export default function Contact() {
         </p>
       </div>
     </section>
+    </>
   );
 }
