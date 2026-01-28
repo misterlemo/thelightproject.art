@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Contact() {
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useEffect(() => {
-    // Check URL for success parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("success") === "true") {
-      setShowSuccess(true);
-      // Remove the success parameter from URL after showing message
-      window.history.replaceState({}, "", window.location.pathname);
-      // Hide success message after 10 seconds
-      setTimeout(() => setShowSuccess(false), 10000);
-    }
-  }, []);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setShowSuccess(true);
+    // Scroll to home anchor
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Submit the form
+    e.currentTarget.submit();
+    // Hide success message after 10 seconds
+    setTimeout(() => setShowSuccess(false), 10000);
+  };
 
   return (
     <section
@@ -37,7 +36,7 @@ export default function Contact() {
           </div>
         )}
 
-        <form action="https://formsubmit.co/thelightproject.art@gmail.com" method="POST" className="space-y-6">
+        <form action="https://formsubmit.co/thelightproject.art@gmail.com" method="POST" onSubmit={handleSubmit} className="space-y-6">
           <input type="hidden" name="_subject" value="New Inquiry - The Light Project" />
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_next" value="https://thelightprojectart.vercel.app?success=true" />
