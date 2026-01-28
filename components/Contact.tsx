@@ -1,4 +1,22 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 export default function Contact() {
+  const searchParams = useSearchParams();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      setShowSuccess(true);
+      // Remove the success parameter from URL after showing message
+      window.history.replaceState({}, "", window.location.pathname);
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000);
+    }
+  }, [searchParams]);
+
   return (
     <section
       id="contact"
@@ -12,6 +30,12 @@ export default function Contact() {
         <p className="text-center text-lg text-secondary mb-12">
           Interested in acquiring an original work, commissioning a custom painting, or exploring collaboration opportunities? All paintings are available for purchase and can be shipped internationally.
         </p>
+
+        {showSuccess && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 text-center rounded-lg">
+            ✓ Thank you! Your message has been sent successfully. We'll get back to you soon.
+          </div>
+        )}
 
         <form action="https://formsubmit.co/thelightproject.art@gmail.com" method="POST" className="space-y-6">
           <input type="hidden" name="_subject" value="New Inquiry - The Light Project" />
