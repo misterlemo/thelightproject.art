@@ -1,6 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function Hero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const element = document.querySelector("#portfolio");
@@ -18,7 +30,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative h-screen flex items-center justify-center text-white"
+      className="relative h-screen flex items-center justify-center text-white overflow-hidden"
       aria-labelledby="hero-heading"
     >
       {/* Background Image with Overlay */}
@@ -28,6 +40,7 @@ export default function Hero() {
           src="/images/hero/dance-of-shadows-cover.jpg"
           alt="Dance of the Shadows - Cycladic architecture with white pergola casting dramatic shadows against blue sky"
           className="w-full h-full object-cover"
+          style={{ transform: `translateY(${scrollY * 0.5}px)` }}
         />
       </div>
 
@@ -49,7 +62,7 @@ export default function Hero() {
         <a
           href="#portfolio"
           onClick={handleClick}
-          className="inline-flex items-center gap-2 px-12 py-4 border-2 border-white text-white hover:bg-white hover:text-foreground transition-all duration-300 text-lg tracking-wide group"
+          className="inline-flex items-center gap-2 px-12 py-4 border-2 border-white text-white hover:bg-white hover:text-foreground transition-all duration-300 text-lg tracking-wide group bg-white/5 backdrop-blur-sm hover:bg-white hover:shadow-2xl"
         >
           View the Works
           <svg
