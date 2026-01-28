@@ -10,6 +10,8 @@ export default function Contact() {
     setShowSuccess(true);
     // Scroll to home anchor
     window.scrollTo({ top: 0, behavior: "smooth" });
+    // Hide success message after 5 seconds
+    setTimeout(() => setShowSuccess(false), 5000);
     // Submit the form after a delay so user sees the success message
     setTimeout(() => {
       e.currentTarget.submit();
