@@ -10,12 +10,18 @@ export default function Contact() {
     setShowSuccess(true);
     // Scroll to home anchor
     window.scrollTo({ top: 0, behavior: "smooth" });
+    // Clear the form
+    e.currentTarget.reset();
     // Hide success message after 5 seconds
     setTimeout(() => setShowSuccess(false), 5000);
-    // Submit the form after a delay so user sees the success message
-    setTimeout(() => {
-      e.currentTarget.submit();
-    }, 500);
+    // Submit the form
+    const formData = new FormData(e.currentTarget);
+    fetch("https://formsubmit.co/thelightproject.art@gmail.com", {
+      method: "POST",
+      body: formData,
+    }).then(() => {
+      // Form submitted successfully
+    });
   };
 
   return (
