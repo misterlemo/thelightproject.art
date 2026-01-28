@@ -1,12 +1,4 @@
-"use client";
-
-import { useState } from "react";
-
 export default function Contact() {
-  const handleEmailClick = () => {
-    window.location.href = "mailto:thelightproject.art@gmail.com";
-  };
-
   return (
     <section
       id="contact"
@@ -22,15 +14,15 @@ export default function Contact() {
         </p>
 
         <div className="text-center space-y-6">
-          <button
-            onClick={handleEmailClick}
-            className="w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide"
+          <a
+            href="mailto:thelightproject.art@gmail.com?subject=Inquiry%20-%20The%20Light%20Project"
+            className="inline-block w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide text-center"
           >
-            Send Email to thelightproject.art@gmail.com
-          </button>
+            Send Email
+          </a>
 
           <p className="text-sm text-secondary">
-            Clicking this button will open your email client
+            thelightproject.art@gmail.com
           </p>
         </div>
 
