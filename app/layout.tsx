@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: "Nine original handmade acrylic paintings exploring light and shadow in Greek architecture. Contemporary Mediterranean art by Maria-Efimia Dimoka. Available for purchase.",
   keywords: ["contemporary Greek artist", "original handmade paintings", "acrylic paintings on canvas", "light and shadow art", "contemporary art from Greece", "fine art paintings for sale", "modern Mediterranean art"],
   authors: [{ name: "Maria-Efimia Dimoka" }],
+  icons: {
+    icon: "/favicon.png",
+  },
   openGraph: {
     title: "The Light Project | Contemporary Greek Art by Maria-Efimia Dimoka",
     description: "Nine original handmade acrylic paintings exploring light and shadow in Greek architecture. Contemporary Mediterranean art available for purchase.",
