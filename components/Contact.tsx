@@ -3,28 +3,8 @@
 import { useState } from "react";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Open email client with pre-filled message
-    const subject = encodeURIComponent(`Inquiry from ${formData.name} - The Light Project`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    );
-    window.open(`mailto:thelightproject.art@gmail.com?subject=${subject}&body=${body}`);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleEmailClick = () => {
+    window.location.href = "mailto:thelightproject.art@gmail.com";
   };
 
   return (
@@ -41,66 +21,18 @@ export default function Contact() {
           Interested in acquiring an original work, commissioning a custom painting, or exploring collaboration opportunities? All paintings are available for purchase and can be shipped internationally.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Contact form">
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm uppercase tracking-wider mb-2">
-              Name <span className="text-red-accent">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Your name"
-              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm uppercase tracking-wider mb-2">
-              Email <span className="text-red-accent">*</span>
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="your@email.com"
-              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
-            />
-          </div>
-
-          {/* Message */}
-          <div>
-            <label htmlFor="message" className="block text-sm uppercase tracking-wider mb-2">
-              Message <span className="text-red-accent">*</span>
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              rows={6}
-              placeholder="Tell me about your interest in the work, commission ideas, or collaboration opportunities..."
-              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all resize-vertical"
-            />
-          </div>
-
-          {/* Submit Button */}
+        <div className="text-center space-y-6">
           <button
-            type="submit"
+            onClick={handleEmailClick}
             className="w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide"
           >
-            Send Message
+            Send Email to thelightproject.art@gmail.com
           </button>
-        </form>
+
+          <p className="text-sm text-secondary">
+            Clicking this button will open your email client
+          </p>
+        </div>
 
         {/* Instagram Link */}
         <div className="mt-12 text-center">
