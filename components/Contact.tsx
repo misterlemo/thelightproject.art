@@ -7,6 +7,8 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Create form data BEFORE clearing
+    const formData = new FormData(e.currentTarget);
     setShowSuccess(true);
     // Scroll to home anchor
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -15,7 +17,6 @@ export default function Contact() {
     // Hide success message after 5 seconds
     setTimeout(() => setShowSuccess(false), 5000);
     // Submit the form
-    const formData = new FormData(e.currentTarget);
     fetch("https://formsubmit.co/thelightproject.art@gmail.com", {
       method: "POST",
       body: formData,
