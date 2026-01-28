@@ -13,18 +13,60 @@ export default function Contact() {
           Interested in acquiring an original work, commissioning a custom painting, or exploring collaboration opportunities? All paintings are available for purchase and can be shipped internationally.
         </p>
 
-        <div className="text-center space-y-6">
-          <a
-            href="mailto:thelightproject.art@gmail.com?subject=Inquiry%20-%20The%20Light%20Project"
-            className="inline-block w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide text-center"
-          >
-            Send Email
-          </a>
+        <form action="https://formsubmit.co/thelightproject.art@gmail.com" method="POST" className="space-y-6">
+          <input type="hidden" name="_subject" value="New Inquiry - The Light Project" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="https://thelightprojectart.vercel.app?success=true" />
 
-          <p className="text-sm text-secondary">
-            thelightproject.art@gmail.com
-          </p>
-        </div>
+          <div>
+            <label htmlFor="name" className="block text-sm uppercase tracking-wider mb-2">
+              Name <span className="text-red-accent">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              placeholder="Your name"
+              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm uppercase tracking-wider mb-2">
+              Email <span className="text-red-accent">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="your@email.com"
+              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="message" className="block text-sm uppercase tracking-wider mb-2">
+              Message <span className="text-red-accent">*</span>
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              required
+              rows={6}
+              placeholder="Tell me about your interest in the work..."
+              className="w-full px-4 py-3 border border-divider focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all resize-vertical"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-accent text-white px-12 py-4 hover:bg-accent-hover transition-all duration-300 text-lg tracking-wide"
+          >
+            Send Message
+          </button>
+        </form>
 
         {/* Instagram Link */}
         <div className="mt-12 text-center">
