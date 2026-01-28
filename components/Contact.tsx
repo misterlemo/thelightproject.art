@@ -17,12 +17,7 @@ export default function Contact() {
     const body = encodeURIComponent(
       `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
     );
-    const mailtoLink = `mailto:thelightproject.art@gmail.com?subject=${subject}&body=${body}`;
-    
-    // Create a temporary link and click it
-    const link = document.createElement('a');
-    link.href = mailtoLink;
-    link.click();
+    window.open(`mailto:thelightproject.art@gmail.com?subject=${subject}&body=${body}`);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
