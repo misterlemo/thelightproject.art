@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { Artwork } from "./Portfolio";
+import Image from "next/image";
+import { useCallback, useEffect, useRef } from "react";
+import { seriesColor, type Artwork } from "@/lib/artworks";
+import type { Dict } from "@/lib/i18n";
+import { scrollToSelector } from "@/lib/scroll";
 
 interface LightboxProps {
+  t: Dict;
   artworks: Artwork[];
   isOpen: boolean;
   currentIndex: number;
@@ -11,161 +15,133 @@ interface LightboxProps {
   onNavigate: (index: number) => void;
 }
 
-export default function Lightbox({
-  artworks,
-  isOpen,
-  currentIndex,
-  onClose,
-  onNavigate,
-}: LightboxProps) {
-  const currentArtwork = artworks[currentIndex];
+export default function Lightbox({ t, artworks, isOpen, currentIndex, onClose, onNavigate }: LightboxProps) {
+  const artwork = artworks[currentIndex];
+  const touchX = useRef<number | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  const previous = useCallback(
+    () => onNavigate(currentIndex === 0 ? artworks.length - 1 : currentIndex - 1),
+    [currentIndex, artworks.length, onNavigate]
+  );
+  const next = useCallback(
+    () => onNavigate(currentIndex === artworks.length - 1 ? 0 : currentIndex + 1),
+    [currentIndex, artworks.length, onNavigate]
+  );
 
   useEffect(() => {
     if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") handlePrevious();
-      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") previous();
+      if (e.key === "ArrowRight") next();
     };
-
-    const handleBodyScroll = () => {
-      document.body.style.overflow = "hidden";
-    };
-
-    handleBodyScroll();
-    window.addEventListener("keydown", handleKeyDown);
-
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "unset";
-      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
     };
-  }, [isOpen, currentIndex]);
+  }, [isOpen, onClose, previous, next]);
 
-  const handlePrevious = () => {
-    onNavigate(currentIndex === 0 ? artworks.length - 1 : currentIndex - 1);
-  };
+  useEffect(() => {
+    if (isOpen) closeRef.current?.focus();
+  }, [isOpen]);
 
-  const handleNext = () => {
-    onNavigate(currentIndex === artworks.length - 1 ? 0 : currentIndex + 1);
-  };
+  if (!isOpen || !artwork) return null;
 
-  const handleInquire = () => {
+  const inquire = () => {
+    const title = artwork.title;
     onClose();
-    const contactSection = document.querySelector("#contact");
-    if (contactSection) {
-      const offset = 80;
-      const elementPosition = contactSection.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-      setTimeout(() => {
-        const messageField = document.querySelector<HTMLTextAreaElement>("#message");
-        if (messageField) {
-          messageField.value = `I'm interested in "${currentArtwork.title}". `;
-          messageField.focus();
-        }
-      }, 500);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  const getImagePath = (id: number) => {
-    const imageMap: { [key: number]: string } = {
-      1: "/images/portfolio/blue/dech-3pm.jpg",
-      2: "/images/portfolio/blue/cycladic-house-11am.jpg",
-      3: "/images/portfolio/blue/schoolroom-curtain-2pm.jpg",
-      4: "/images/portfolio/red/tiled-roof-4pm.jpg",
-      5: "/images/portfolio/red/staircase-ship-1pm.jpg",
-      6: "/images/portfolio/red/red-carpet-5pm.jpg",
-      7: "/images/portfolio/yellow/grille-window-4pm.jpg",
-      8: "/images/portfolio/yellow/building-stairwell-10am.jpg",
-      9: "/images/portfolio/yellow/garage-door-7pm.jpg",
-    };
-    return imageMap[id] || "";
+    scrollToSelector("#contact");
+    setTimeout(() => {
+      const field = document.querySelector<HTMLTextAreaElement>("#message");
+      if (field) {
+        field.value = `${t.lightbox.interested} «${title}». `;
+        field.focus({ preventScroll: true });
+      }
+    }, 600);
   };
 
   return (
     <div
-      className="fixed inset-0 z-[2000] bg-black/95 flex items-center justify-center"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/85 p-4 backdrop-blur-xl"
       onClick={onClose}
+      onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+      onTouchEnd={(e) => {
+        if (touchX.current === null) return;
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        if (Math.abs(dx) > 60) (dx > 0 ? previous : next)();
+        touchX.current = null;
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="lightbox-title"
     >
-      {/* Close Button */}
       <button
+        ref={closeRef}
         onClick={onClose}
-        className="absolute top-4 right-4 text-white hover:text-accent transition-colors z-10 p-2"
-        aria-label="Close lightbox"
+        className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/25"
+        aria-label={t.lightbox.close}
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+          <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
-      {/* Previous Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handlePrevious();
-        }}
-        className="absolute left-4 text-white hover:text-accent transition-colors z-10 p-2"
-        aria-label="Previous artwork"
-      >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      {/* Next Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleNext();
-        }}
-        className="absolute right-4 text-white hover:text-accent transition-colors z-10 p-2"
-        aria-label="Next artwork"
-      >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      {/* Content */}
       <div
-        className="max-w-7xl w-full mx-4 flex flex-col lg:flex-row items-center gap-8"
+        className="grid max-h-full w-full max-w-6xl items-center gap-8 overflow-y-auto lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-14"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Image */}
-        <div className="flex-1 max-w-3xl">
-          <img
-            src={getImagePath(currentArtwork.id)}
-            alt={currentArtwork.alt}
-            className="w-full aspect-square object-cover"
+        <div className="relative mx-auto aspect-square w-full max-w-[min(100%,78vh)] overflow-hidden rounded-3xl">
+          <Image
+            key={artwork.id}
+            src={artwork.image}
+            alt={artwork.alt}
+            fill
+            sizes="(min-width: 1024px) 700px, 100vw"
+            className="object-cover"
           />
         </div>
 
-        {/* Details */}
-        <div className="flex-1 max-w-md text-white space-y-4">
-          <h3 id="lightbox-title" className="text-3xl font-serif">
-            {currentArtwork.title}
+        <div className="pb-4 text-white">
+          <div className="flex items-center justify-between gap-4">
+            <p className="eyebrow flex items-center gap-2 !text-white/60">
+              <span
+                aria-hidden
+                className="h-2 w-2 rounded-full"
+                style={{ background: seriesColor[artwork.series] }}
+              />
+              {t.series[artwork.series]} · {currentIndex + 1} / {artworks.length}
+            </p>
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={previous}
+                aria-label={t.lightbox.prev}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-white/15"
+              >
+                ←
+              </button>
+              <button
+                onClick={next}
+                aria-label={t.lightbox.next}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-white/15"
+              >
+                →
+              </button>
+            </div>
+          </div>
+          <h3 id="lightbox-title" className="mt-4 font-serif text-4xl leading-none sm:text-5xl">
+            {artwork.title}
+            <span className="mt-2 block italic text-white/60">{artwork.time}</span>
           </h3>
-          <p className="text-lg text-white/80">
-            {currentArtwork.year} • {currentArtwork.medium}
+          <p className="mt-6 text-sm text-white/60">
+            {artwork.year} · {artwork.medium} · {artwork.dimensions}
           </p>
-          <p className="text-lg text-white/80">{currentArtwork.dimensions}</p>
-          <p className="text-lg leading-relaxed text-white/90 pt-4">
-            {currentArtwork.description}
-          </p>
-          <button
-            onClick={handleInquire}
-            className="mt-6 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-foreground transition-all duration-300"
-          >
-            Inquire About This Work
+          <p className="mt-6 text-lg leading-relaxed text-white/85 text-pretty">{artwork.description}</p>
+
+          <button onClick={inquire} className="btn mt-10 w-full bg-white text-black hover:bg-accent hover:text-white sm:w-auto">
+            {t.lightbox.inquire}
           </button>
         </div>
       </div>

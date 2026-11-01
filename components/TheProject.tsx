@@ -1,37 +1,59 @@
-export default function TheProject() {
+import { seriesColor, type Series } from "@/lib/artworks";
+import type { Dict, Lang } from "@/lib/i18n";
+
+const series: Series[] = ["blue", "red", "yellow"];
+
+export default function TheProject({ t }: { lang: Lang; t: Dict }) {
+  const p = t.project;
   return (
-    <section
-      id="the-project"
-      className="py-24 md:py-32 bg-white"
-      aria-labelledby="project-heading"
-    >
-      <div className="max-w-text mx-auto px-6">
-        <h2 id="project-heading" className="text-4xl md:text-5xl font-serif text-center mb-12">
-          The Project
+    <section id="the-project" className="py-28 md:py-40" aria-labelledby="project-heading">
+      <div className="mx-auto max-w-content px-6">
+        <p className="eyebrow mb-6">{p.eyebrow}</p>
+        <h2 id="project-heading" className="section-title max-w-4xl">
+          {p.h2a}<em className="text-accent">{p.h2b}</em>
         </h2>
 
-        <div className="space-y-6 text-lg leading-relaxed">
-          <p>
-            <em>Dance of the Shadows</em> is an exploration of light's most overlooked companion: the shadow. Through nine handmade acrylic paintings, this body of work captures the ephemeral interplay between light and shadow in the Greek landscape—moments so fleeting they exist for mere minutes before transforming entirely.
-          </p>
+        <div className="mt-16 grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="space-y-6 text-lg leading-relaxed text-secondary lg:col-span-7 text-pretty">
+            <p>
+              <em className="text-foreground">{p.p1Em}</em>{p.p1}
+            </p>
+            <p>
+              {p.p2}
+            </p>
+            <p>
+              {p.p3}
+            </p>
+          </div>
 
-          <p>
-            Each painting begins with a photograph taken throughout the day, a witness to reality as transient as light itself. These images reveal details not immediately obvious: the way sunlight slips through Cycladic cracks, how railings cast rhythmic shadows on curtains, or the optical illusions created by intense Mediterranean light on a ship's deck.
-          </p>
-
-          <p>
-            The work is organized into three series—<em>Shadows in Blue</em>, <em>Shadows in Red</em>, and <em>Shadows in Yellow</em>—an ode to the primary colors and to light itself. Using flat, solid colors intentionally, the focus shifts to the shadow, where emotion emerges most powerfully.
-          </p>
-
-          <p>
-            Inspired by the radiant language of Greek painter Panayiotis Tetsis and architect Luis Kahn's observation that "the sun never knew how great it was until it hit the side of a building or lit up a room," these paintings reflect a simple truth: light and shadow cannot exist without each other. Shadow gives light its value, creates atmosphere, and transforms space into something three-dimensional and alive.
-          </p>
-
-          <blockquote className="border-l-4 border-accent pl-8 my-12 italic text-2xl text-secondary">
-            "The purpose of light is to create shadows, and shadows exist to create emotion."
-            <footer className="text-base not-italic mt-2">— Luis Kahn</footer>
-          </blockquote>
+          <ul className="grid gap-4 lg:col-span-5">
+            {series.map((s) => (
+              <li
+                key={s}
+                className="group flex items-center justify-between rounded-3xl border border-divider bg-surface p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/40"
+              >
+                <div className="flex items-center gap-5">
+                  <span
+                    aria-hidden
+                    className="h-12 w-12 rounded-full transition-transform duration-500 group-hover:scale-110"
+                    style={{ background: seriesColor[s] }}
+                  />
+                  <span className="font-serif text-2xl">{t.series[s]}</span>
+                </div>
+                <span className="text-sm text-secondary">
+                  3 {p.works}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <blockquote className="mt-28 border-t border-divider pt-16 text-center">
+          <p className="mx-auto max-w-4xl font-serif text-4xl italic leading-tight md:text-6xl text-balance">
+            &ldquo;{p.quote}&rdquo;
+          </p>
+          <footer className="eyebrow mt-8">{p.quoteBy}</footer>
+        </blockquote>
       </div>
     </section>
   );

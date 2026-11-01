@@ -1,13 +1,16 @@
-export default function Footer() {
+import type { Dict } from "@/lib/i18n";
+
+export default function Footer({ t }: { t: Dict }) {
   return (
-    <footer className="bg-foreground text-white py-12">
-      <div className="max-w-content mx-auto px-6 text-center">
-        <p className="text-sm">
-          © {new Date().getFullYear()} The Light Project. All rights reserved.
+    <footer className="border-t border-divider">
+      <div className="mx-auto flex max-w-content flex-col gap-6 px-6 py-14 md:flex-row md:items-end md:justify-between">
+        <p className="font-serif text-5xl leading-none md:text-7xl">
+          The Light <em>Project</em>
         </p>
-        <p className="text-sm text-white/60 mt-2">
-          Maria-Efimia Dimoka • Contemporary Greek Artist
-        </p>
+        <div className="text-sm text-secondary md:text-right">
+          <p>{t.footer.role}</p>
+          <p className="mt-1">© {new Date().getFullYear()} {t.footer.rights}</p>
+        </div>
       </div>
     </footer>
   );

@@ -1,32 +1,27 @@
 import type { Config } from "tailwindcss";
 
+const v = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
+
 const config: Config = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./components/**/*.{js,ts,jsx,tsx,mdx}", "./app/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        background: "#FAFAFA",
-        foreground: "#1A1A1A",
-        secondary: "#666666",
-        accent: "#2C5F8D",
-        "accent-hover": "#234A6F",
-        divider: "#E5E5E5",
-        "blue-accent": "#2C5F8D",
-        "red-accent": "#C84B4B",
-        "yellow-accent": "#D4A017",
+        background: v("bg"),
+        surface: v("surface"),
+        foreground: v("fg"),
+        secondary: v("muted"),
+        divider: v("line"),
+        accent: v("accent"),
+        "blue-accent": v("blue"),
+        "red-accent": v("red"),
+        "yellow-accent": v("yellow"),
       },
       fontFamily: {
-        serif: ["Playfair Display", "serif"],
-        sans: ["Inter", "sans-serif"],
+        serif: ["var(--font-display)", "var(--font-display-greek)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
-      maxWidth: {
-        content: "1200px",
-        text: "720px",
-      },
+      maxWidth: { content: "1240px", text: "720px" },
     },
   },
   plugins: [],

@@ -1,104 +1,125 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { scrollToSelector } from "@/lib/scroll";
+import type { Dict, Lang } from "@/lib/i18n";
 
-export default function Navigation() {
+export default function Navigation({ lang, t }: { lang: Lang; t: Dict }) {
+  const navItems = [
+    { label: t.nav.project, href: "#the-project" },
+    { label: t.nav.works, href: "#portfolio" },
+    { label: t.nav.artist, href: "#about" },
+    { label: t.nav.contact, href: "#contact" },
+  ];
+  const otherPath = lang === "en" ? "/el" : "/";
+
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => e.isIntersecting && setActive(`#${e.target.id}`));
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    navItems.forEach(({ href }) => {
+      const el = document.querySelector(href);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
   }, []);
 
-  const navItems = [
-    { label: "Home", href: "#home" },
-    { label: "The Project", href: "#the-project" },
-    { label: "Portfolio", href: "#portfolio" },
-    { label: "About the Artist", href: "#about" },
-    { label: "Contact", href: "#contact" },
-  ];
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const go = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-      setIsOpen(false);
-    }
+    setIsOpen(false);
+    scrollToSelector(href);
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/95 backdrop-blur-md border-b border-divider" : "bg-background/95 backdrop-blur-md border-b border-divider"
-      }`}
-    >
-      <nav className="max-w-content mx-auto px-6 lg:px-8 h-20 flex items-center justify-between" aria-label="Main navigation">
-        <a href="#home" onClick={(e) => handleClick(e, "#home")} className="text-2xl font-serif font-medium hover:text-accent transition-colors">
+    <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+      <nav
+        aria-label="Main navigation"
+        className="glass flex w-full max-w-3xl items-center justify-between rounded-full border border-divider/70 py-2 pl-6 pr-2 shadow-[0_8px_30px_-12px_rgb(0_0_0/0.25)]"
+      >
+        <a
+          href="#home"
+          onClick={(e) => go(e, "#home")}
+          className="flex items-center gap-2 font-serif text-xl"
+        >
+          <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-accent" />
           The Light Project
         </a>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center space-x-10">
+        <ul className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
-                onClick={(e) => handleClick(e, item.href)}
-                className="text-sm uppercase tracking-wider hover:text-accent transition-colors duration-300 relative group"
+                onClick={(e) => go(e, item.href)}
+                aria-current={active === item.href ? "true" : undefined}
+                className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                  active === item.href
+                    ? "bg-foreground text-background"
+                    : "text-secondary hover:text-foreground"
+                }`}
               >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
               </a>
             </li>
           ))}
         </ul>
 
-        {/* Mobile Menu Button */}
+        <Link
+          href={otherPath}
+          hrefLang={lang === "en" ? "el" : "en"}
+          aria-label={t.nav.switchLabel}
+          className="ml-auto mr-2 rounded-full border border-divider px-3.5 py-2 text-xs font-medium tracking-wide transition-colors hover:border-foreground md:ml-2 md:mr-0 md:order-last"
+        >
+          {t.nav.switchTo}
+        </Link>
+
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 hover:text-accent transition-colors"
-          aria-label="Toggle menu"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background md:hidden"
+          aria-label={t.nav.menu}
           aria-expanded={isOpen}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
             {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" d="M4 8h16M4 16h16" />
             )}
           </svg>
         </button>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden fixed inset-0 top-20 bg-background z-40">
-            <ul className="flex flex-col items-center justify-center h-full space-y-8">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    onClick={(e) => handleClick(e, item.href)}
-                    className="text-2xl uppercase tracking-wider hover:text-accent transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </nav>
+
+      {isOpen && (
+        <div className="fixed inset-0 -z-10 bg-background md:hidden">
+          <ul className="flex h-full flex-col items-start justify-center gap-4 px-8">
+            {navItems.map((item, i) => (
+              <li key={item.href} className="hero-in" style={{ animationDelay: `${i * 60}ms` }}>
+                <a
+                  href={item.href}
+                  onClick={(e) => go(e, item.href)}
+                  className="font-serif text-6xl transition-colors hover:text-accent"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </header>
   );
 }
