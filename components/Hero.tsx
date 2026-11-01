@@ -1,79 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef } from "react";
+import { scrollToSelector } from "@/lib/scroll";
+import type { Dict } from "@/lib/i18n";
 
-export default function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+export default function Hero({ t }: { t: Dict }) {
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (imgRef.current) {
+        imgRef.current.style.transform = `translate3d(0, ${window.scrollY * 0.35}px, 0) scale(1.1)`;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const element = document.querySelector("#portfolio");
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
 
   return (
     <section
       id="home"
-      className="relative h-screen flex items-center justify-center text-white overflow-hidden"
+      className="relative flex min-h-[100svh] items-end overflow-hidden text-white"
       aria-labelledby="hero-heading"
     >
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20 z-10"></div>
-        <img
+      <div ref={imgRef} className="absolute inset-0 z-0 will-change-transform">
+        <Image
           src="/images/hero/dance-of-shadows-cover.jpg"
-          alt="Dance of the Shadows - Cycladic architecture with white pergola casting dramatic shadows against blue sky"
-          className="w-full h-full object-cover"
-          style={{ transform: `translateY(${scrollY * 0.5}px)` }}
+          alt={t.hero.alt}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
       </div>
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
 
-      {/* Content */}
-      <div className="relative z-20 text-center px-6 max-w-4xl">
+      <div className="relative z-20 mx-auto w-full max-w-content px-6 pb-14 pt-40 md:pb-20">
+        <p className="eyebrow hero-in !text-white/70">
+          {t.hero.eyebrow}
+        </p>
         <h1
           id="hero-heading"
-          className="text-5xl md:text-7xl lg:text-8xl font-serif font-normal mb-6 tracking-tight"
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}
+          className="hero-in mt-5 font-serif text-[clamp(3.5rem,13vw,11rem)] leading-[0.9]"
+          style={{ animationDelay: "120ms" }}
         >
-          The Light Project
+          The Light
+          <br />
+          <em className="pl-[0.4em]">Project</em>
         </h1>
-        <p
-          className="text-lg md:text-xl lg:text-2xl font-light leading-relaxed mb-12 max-w-2xl mx-auto"
-          style={{ textShadow: "0 1px 5px rgba(0,0,0,0.3)" }}
+
+        <div
+          className="hero-in mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between"
+          style={{ animationDelay: "260ms" }}
         >
-          Where Greek light meets canvas—a meditation on shadow, time, and the fleeting beauty of everyday moments. Nine original paintings capturing the dance between light and darkness.
-        </p>
-        <a
-          href="#portfolio"
-          onClick={handleClick}
-          className="inline-flex items-center gap-2 px-12 py-4 border-2 border-white text-white hover:bg-white hover:text-foreground transition-all duration-300 text-lg tracking-wide group bg-white/5 backdrop-blur-sm hover:bg-white hover:shadow-2xl"
-        >
-          View the Works
-          <svg
-            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
+          <p className="max-w-md text-lg leading-relaxed text-white/85 text-pretty">
+            {t.hero.tagline}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="#portfolio"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSelector("#portfolio");
+              }}
+              className="btn bg-white text-black hover:bg-accent hover:text-white"
+            >
+              {t.hero.view}
+              <span aria-hidden>↓</span>
+            </a>
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSelector("#contact");
+              }}
+              className="btn border border-white/40 text-white backdrop-blur-md hover:bg-white/15"
+            >
+              {t.hero.inquire}
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

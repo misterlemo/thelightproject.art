@@ -2,27 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: 250 247 241;
+  --surface: 255 255 255;
+  --fg: 24 22 20;
+  --muted: 108 102 94;
+  --line: 224 217 205;
+  --accent: 201 106 26;
+  --blue: 44 95 141;
+  --red: 200 75 75;
+  --yellow: 212 160 23;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 14 13 12;
+    --surface: 24 22 20;
+    --fg: 244 239 231;
+    --muted: 160 153 143;
+    --line: 46 43 39;
+    --accent: 240 154 74;
+    --blue: 98 156 208;
+    --red: 224 112 112;
+    --yellow: 232 184 64;
+    color-scheme: dark;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
   }
-  
   body {
     @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
   }
+  h1, h2, h3, h4 {
+    @apply font-serif font-normal;
+    letter-spacing: -0.015em;
+  }
+  ::selection {
+    background: rgb(var(--accent) / 0.3);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
+@layer components {
+  .eyebrow {
+    @apply text-xs uppercase tracking-[0.22em] text-secondary font-medium;
+  }
+  .section-title {
+    @apply font-serif text-5xl md:text-7xl leading-[1.02] text-balance;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-all duration-300 active:scale-[0.97];
+  }
+  .btn-solid {
+    @apply btn bg-foreground text-background hover:bg-accent hover:text-white;
+  }
+  .btn-ghost {
+    @apply btn border border-divider hover:border-foreground;
+  }
+  .field {
+    @apply w-full rounded-2xl border border-divider bg-surface px-5 py-4 text-base placeholder:text-secondary/60 transition-all focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15;
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .glass {
+    background: rgb(var(--bg) / 0.65);
+    backdrop-filter: blur(18px) saturate(1.6);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
   }
 }
 
 :focus-visible {
-  outline: 2px solid #2C5F8D;
-  outline-offset: 2px;
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 3px;
 }
+
+/* subtle film grain over the page */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-in { animation: fade-up 1s cubic-bezier(.2,.7,.2,1) both; }

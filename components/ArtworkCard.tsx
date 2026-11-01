@@ -1,52 +1,52 @@
 "use client";
 
-import { Artwork } from "./Portfolio";
+import Image from "next/image";
+import { seriesColor, type Artwork } from "@/lib/artworks";
 
 interface ArtworkCardProps {
   artwork: Artwork;
   onClick: () => void;
+  viewLabel: string;
 }
 
-export default function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
-  const getImagePath = (id: number, series: string) => {
-    const imageMap: { [key: number]: string } = {
-      1: "/images/portfolio/blue/dech-3pm.jpg",
-      2: "/images/portfolio/blue/cycladic-house-11am.jpg",
-      3: "/images/portfolio/blue/schoolroom-curtain-2pm.jpg",
-      4: "/images/portfolio/red/tiled-roof-4pm.jpg",
-      5: "/images/portfolio/red/staircase-ship-1pm.jpg",
-      6: "/images/portfolio/red/red-carpet-5pm.jpg",
-      7: "/images/portfolio/yellow/grille-window-4pm.jpg",
-      8: "/images/portfolio/yellow/building-stairwell-10am.jpg",
-      9: "/images/portfolio/yellow/garage-door-7pm.jpg",
-    };
-    return imageMap[id] || "";
-  };
-
+export default function ArtworkCard({ artwork, onClick, viewLabel }: ArtworkCardProps) {
   return (
-    <article className="group cursor-pointer" onClick={onClick}>
-      <div className="relative aspect-square mb-4 overflow-hidden bg-gray-100">
-        {/* Artwork Image */}
-        <img
-          src={getImagePath(artwork.id, artwork.series)}
-          alt={artwork.alt}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-center justify-center z-10">
-          <span className="text-white text-lg tracking-wide">View Details</span>
+    <article>
+      <button
+        onClick={onClick}
+        className="group block w-full text-left"
+        aria-label={`${viewLabel} ${artwork.title}, ${artwork.time}`}
+      >
+        <div className="relative aspect-square overflow-hidden rounded-3xl bg-surface">
+          <Image
+            src={artwork.image}
+            alt={artwork.alt}
+            fill
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+          />
+          <span className="glass absolute left-4 top-4 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
+            <span
+              aria-hidden
+              className="h-2 w-2 rounded-full"
+              style={{ background: seriesColor[artwork.series] }}
+            />
+            {artwork.time}
+          </span>
+          <span className="absolute bottom-4 right-4 flex h-11 w-11 translate-y-2 items-center justify-center rounded-full bg-white text-black opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
+            </svg>
+          </span>
         </div>
-      </div>
 
-      {/* Caption */}
-      <div className="space-y-2">
-        <h4 className="text-xl font-serif">{artwork.title}</h4>
-        <p className="text-sm text-secondary">
-          {artwork.year} • {artwork.medium} • {artwork.dimensions}
-        </p>
-        <p className="text-base leading-relaxed">{artwork.description}</p>
-      </div>
+        <div className="mt-5 px-1">
+          <h4 className="font-serif text-2xl leading-tight">{artwork.title}</h4>
+          <p className="mt-1.5 text-sm text-secondary">
+            {artwork.medium} · {artwork.dimensions}
+          </p>
+        </div>
+      </button>
     </article>
   );
 }
